@@ -123,8 +123,6 @@ export default function Index() {
           hitSlop={{
             top: 100,
             bottom: 100,
-            left: 20,
-            right: 20,
           }}
         >
           <Animated.View
@@ -183,12 +181,6 @@ export default function Index() {
         (index + 1) * width,
       ];
 
-      const zIndex = useAnimatedStyle(() => {
-        const value = scrollX.value;
-        return {
-          zIndex: value > inputRange[0] && value < inputRange[3] ? 1 : 0,
-        };
-      });
       const opacity = useAnimatedStyle(() => {
         const value = scrollX.value;
         return {
@@ -219,7 +211,6 @@ export default function Index() {
             {
               filter: item.completed ? "none" : "grayscale(1)",
             },
-            zIndex,
           ]}
         >
           <Animated.View

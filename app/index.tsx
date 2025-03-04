@@ -108,8 +108,11 @@ export default function Index() {
       });
 
       const scrollToNext = () => {
+        "worklet";
         if (scrollRef.current) {
-          const nextIndex = index === ACHIEVMENTS.length - 1 ? 0 : index + 1;
+          const calculatedIndex = Math.round(scrollX.value / width);
+          const nextIndex =
+            calculatedIndex === ACHIEVMENTS.length - 1 ? 0 : index;
           scrollRef.current.scrollTo({
             x: width * nextIndex,
             animated: true,

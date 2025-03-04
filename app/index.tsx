@@ -24,6 +24,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Glow from "@/components/ui/Glow";
+import { Text } from "react-native";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -32,16 +34,25 @@ export default function Index() {
   const wide = width > 540;
   const inset = useSafeAreaInsets();
   const text = useThemeColor({}, "text");
+  const bg = useThemeColor({}, "background");
   const scrollRef = useRef<Animated.ScrollView>(null);
   const scrollX = useSharedValue(0);
 
   const hexColors = useMemo(
     () =>
       ACHIEVMENTS.map((item) =>
-        item.completed ? hexToRgb(item.color) : "rgba(0,0,0,0)"
+        item.completed ? hexToRgb(item.color) : hexToRgb(bg)
       ),
-    [ACHIEVMENTS]
+    [ACHIEVMENTS, bg]
   );
+
+  const background = useDerivedValue(() => {
+    return interpolateColor(
+      scrollX.value,
+      ACHIEVMENTS.map((_, i) => i * width),
+      hexColors
+    );
+  });
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -51,11 +62,7 @@ export default function Index() {
 
   const animatedBg = useAnimatedStyle(() => {
     return {
-      backgroundColor: interpolateColor(
-        scrollX.value,
-        ACHIEVMENTS.map((_, i) => i * width),
-        hexColors
-      ),
+      backgroundColor: background.value,
     };
   });
 
@@ -148,8 +155,9 @@ export default function Index() {
               />
             </View>
             {!item.completed && (
-              <ThemedText
+              <Text
                 style={{
+                  color: "#fff",
                   lineHeight: 84,
                   position: "absolute",
                   transform: [{ translateY: "70%" }],
@@ -157,13 +165,13 @@ export default function Index() {
                 }}
               >
                 <MaterialIcons name="lock" size={80} />
-              </ThemedText>
+              </Text>
             )}
           </Animated.View>
         </Pressable>
       );
     };
-  }, [width, scrollX]);
+  }, [width, scrollX, ACHIEVMENTS]);
 
   const Content = useMemo(() => {
     return ({ item, index }: { index: number; item: any }) => {
@@ -178,7 +186,7 @@ export default function Index() {
       const zIndex = useAnimatedStyle(() => {
         const value = scrollX.value;
         return {
-          zIndex: value > inputRange[0] && value < inputRange[-1] ? 1 : 0,
+          zIndex: value > inputRange[0] && value < inputRange[3] ? 1 : 0,
         };
       });
       const opacity = useAnimatedStyle(() => {
@@ -314,7 +322,10 @@ export default function Index() {
         },
       ]}
     >
-      <Animated.View style={[styles.overlay, animatedBg]} />
+      <Glow />
+      <Animated.View
+        style={[generalStyles.overlay, styles.overlay, animatedBg]}
+      />
       <ScrollView
         style={{
           maxWidth: width,
@@ -391,12 +402,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   overlay: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    filter: "opacity(0.4)",
+    filter: "opacity(0.5)",
   },
   image: {
     aspectRatio: 1,

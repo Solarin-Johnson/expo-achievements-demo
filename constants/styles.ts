@@ -27,4 +27,11 @@ export const generalStyles = StyleSheet.create({
   fill: {
     flex: 1,
   },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
 });

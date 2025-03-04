@@ -5,8 +5,8 @@
 
 export const Colors = {
   light: {
-    text: "#11181C",
-    background: "#fff",
+    text: "#ffffff",
+    background: "#727272",
   },
   dark: {
     text: "#ECEDEE",

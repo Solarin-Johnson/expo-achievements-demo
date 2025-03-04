@@ -8,17 +8,23 @@ export const generalStyles = StyleSheet.create({
   },
   text: {
     fontSize: 32,
-    lineHeight: 40,
+    lineHeight: 42,
+    textAlign: "center",
   },
   sub_text: {
-    fontSize: 12,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 24,
     opacity: 0.8,
+    paddingHorizontal: 12,
+    textAlign: "center",
   },
   family_text: {
     fontFamily: "Righteous_400Regular",
   },
   family_sub: {
     fontFamily: "Inter_500Medium",
+  },
+  fill: {
+    flex: 1,
   },
 });

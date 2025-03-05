@@ -31,11 +31,10 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export default function Index() {
   const { width } = useWindowDimensions();
-  const wide = width > 540;
+  const wide = width > 420;
   const inset = useSafeAreaInsets();
   const text = useThemeColor({}, "text");
   const bg = useThemeColor({}, "background");
-  const scrollRef = useRef<Animated.ScrollView>(null);
   const scrollX = useSharedValue(0);
 
   const hexColors = useMemo(
@@ -74,105 +73,62 @@ export default function Index() {
         (index + 1) * width,
       ];
 
-      const animatedValues = useDerivedValue(() => {
-        return {
-          opacity: interpolate(
-            scrollX.value,
-            inputRange,
-            [0.3, 1, 0.3],
-            Extrapolation.CLAMP
-          ),
-          translateX: interpolate(
-            scrollX.value,
-            inputRange,
-            [width * -0.4, 0, width * 0.4],
-            Extrapolation.CLAMP
-          ),
-          scale: interpolate(
-            scrollX.value,
-            inputRange,
-            [0.65, 1, 0.65],
-            Extrapolation.CLAMP
-          ),
-        };
-      });
-
       const animatedStyle = useAnimatedStyle(() => {
+        const rotate = interpolate(
+          scrollX.value,
+          inputRange,
+          [260, 0, -360],
+          Extrapolation.EXTEND
+        );
+
         return {
-          opacity: animatedValues.value.opacity,
-          transform: [
-            { translateX: animatedValues.value.translateX },
-            { scale: animatedValues.value.scale },
-          ],
+          transform: [{ rotateY: `${rotate}deg` }],
         };
       });
-
-      const scrollToNext = () => {
-        "worklet";
-        if (scrollRef.current) {
-          const calculatedIndex = Math.round(scrollX.value / width);
-          const nextIndex =
-            calculatedIndex === ACHIEVMENTS.length - 1 ? 0 : index;
-          scrollRef.current.scrollTo({
-            x: width * nextIndex,
-            animated: true,
-          });
-        }
-      };
 
       return (
-        <Pressable
-          onPress={scrollToNext}
-          hitSlop={{
-            top: 100,
-            bottom: 100,
-          }}
+        <Animated.View
+          style={[
+            styles.achievment,
+            { width: width },
+            animatedStyle,
+            {
+              filter: item.completed ? "none" : "grayscale(1)",
+            },
+          ]}
         >
-          <Animated.View
-            style={[
-              styles.achievment,
-              { width: width },
-              animatedStyle,
-              {
-                filter: item.completed ? "none" : "grayscale(1)",
-              },
-            ]}
+          <View
+            style={{
+              filter: item.completed ? "none" : "brightness(0.6) grayscale(8)",
+            }}
           >
-            <View
+            <Image
+              source={item.image}
+              style={[
+                styles.image,
+                {
+                  width: wide ? 250 : width / 1.5,
+                },
+              ]}
+            />
+          </View>
+          {!item.completed && (
+            <Text
               style={{
-                filter: item.completed
-                  ? "none"
-                  : "brightness(0.6) grayscale(8)",
+                color: "#fff",
+                lineHeight: 84,
+                position: "absolute",
+                transform: [{ translateY: "110%" }],
+                filter: "drop-shadow(0 0 4px #00000040)",
               }}
             >
-              <Image
-                source={item.image}
-                style={[
-                  styles.image,
-                  {
-                    width: wide ? 240 : 205,
-                  },
-                ]}
-              />
-            </View>
-            {!item.completed && (
-              <Text
-                style={{
-                  color: "#fff",
-                  lineHeight: 84,
-                  position: "absolute",
-                  transform: [{ translateY: "70%" }],
-                  filter: "drop-shadow(0 0 4px #00000040)",
-                }}
-              >
-                <MaterialIcons name="lock" size={80} />
-              </Text>
-            )}
-          </Animated.View>
-        </Pressable>
+              <MaterialIcons name="lock" size={80} />
+            </Text>
+          )}
+        </Animated.View>
       );
     };
-  }, [width, scrollX, ACHIEVMENTS]);
+  }, [width]);
 
   const Content = useMemo(() => {
     return ({ item, index }: { index: number; item: any }) => {
@@ -208,14 +164,7 @@ export default function Index() {
       });
 
       return (
-        <Animated.View
-          style={[
-            styles.content,
-            {
-              filter: item.completed ? "none" : "grayscale(1)",
-            },
-          ]}
-        >
+        <Animated.View style={[styles.content]}>
           <Animated.View
             style={[
               opacity,
@@ -232,7 +181,7 @@ export default function Index() {
                 generalStyles.family_sub,
                 generalStyles.sub_text,
                 {
-                  opacity: 0.7,
+                  opacity: 0.75,
                   paddingBottom: 16,
                 },
               ]}
@@ -247,8 +196,8 @@ export default function Index() {
                   {
                     textTransform: "capitalize",
                     letterSpacing: 1,
-                    fontSize: 13,
-                    opacity: 0.5,
+                    fontSize: 15,
+                    opacity: 0.55,
                   },
                 ]}
               >
@@ -280,8 +229,8 @@ export default function Index() {
                   console.log("Share", index);
                 }}
               >
-                <ThemedText>
-                  <Feather name="share" size={15} />
+                <ThemedText style={{ opacity: 0.8 }}>
+                  <Feather name="share" size={20} />
                 </ThemedText>
                 <ThemedText
                   style={[
@@ -289,8 +238,8 @@ export default function Index() {
                     generalStyles.sub_text,
                     {
                       textTransform: "uppercase",
-                      letterSpacing: 1,
-                      fontSize: 12,
+                      letterSpacing: 1.2,
+                      fontSize: 14,
                       opacity: 0.7,
                       paddingHorizontal: 0,
                     },
@@ -304,7 +253,7 @@ export default function Index() {
         </Animated.View>
       );
     };
-  }, [scrollX, width, text, ACHIEVMENTS]);
+  }, [scrollX, width, text]);
 
   return (
     <ThemedView
@@ -332,9 +281,13 @@ export default function Index() {
         ]}
         showsHorizontalScrollIndicator={false}
       >
-        <Animated.ScrollView
-          ref={scrollRef}
+        <Animated.FlatList
           horizontal
+          data={ACHIEVMENTS}
+          renderItem={({ item, index }) => (
+            <Badge item={item} index={index} key={index} />
+          )}
+          keyExtractor={(_, index) => index.toString()}
           snapToInterval={width}
           decelerationRate="fast"
           snapToAlignment="center"
@@ -343,18 +296,51 @@ export default function Index() {
           contentContainerStyle={styles.scroll}
           onScroll={scrollHandler}
           pagingEnabled={true}
+          scrollEventThrottle={16}
+          removeClippedSubviews={true}
+          windowSize={3}
+          maxToRenderPerBatch={3}
+          initialNumToRender={2}
           disableIntervalMomentum
-        >
-          {ACHIEVMENTS.map((item, index) => (
-            <Badge item={item} index={index} key={index} />
-          ))}
-        </Animated.ScrollView>
+        />
         <View
           style={{
-            flex: 1.3,
+            flex: 2,
             width,
           }}
         >
+          <View style={styles.dotsContainer}>
+            {ACHIEVMENTS.map((_, index) => {
+              const animatedDotStyle = useAnimatedStyle(() => {
+                const scale = interpolate(
+                  scrollX.value,
+                  [(index - 1) * width, index * width, (index + 1) * width],
+                  [0.8, 1.2, 0.8],
+                  Extrapolation.CLAMP
+                );
+                const opacity = interpolate(
+                  scrollX.value,
+                  [(index - 1) * width, index * width, (index + 1) * width],
+                  [0.4, 1, 0.4],
+                  Extrapolation.CLAMP
+                );
+                return { transform: [{ scale }], opacity };
+              });
+
+              return (
+                <Animated.View
+                  key={index}
+                  style={[
+                    styles.dot,
+                    animatedDotStyle,
+                    {
+                      backgroundColor: text + "df",
+                    },
+                  ]}
+                />
+              );
+            })}
+          </View>
           {ACHIEVMENTS.map((item, index) => (
             <Content item={item} index={index} key={index} />
           ))}
@@ -386,8 +372,8 @@ const styles = StyleSheet.create({
     right: 0,
   },
   button: {
-    paddingVertical: 8,
-    paddingHorizontal: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
     borderRadius: 50,
     borderWidth: 1,
     flexDirection: "row",
@@ -396,10 +382,23 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   overlay: {
-    filter: "opacity(0.5)",
+    filter: "opacity(0.6)",
   },
   image: {
     aspectRatio: 1,
-    filter: "drop-shadow(0 0 4px #00000035)",
+    filter: "drop-shadow(0 0 4px #00000030)",
+  },
+
+  dotsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    bottom: 20,
+    width: "100%",
+  },
+  dot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    marginHorizontal: 3,
   },
 });

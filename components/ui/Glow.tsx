@@ -1,15 +1,11 @@
-import { View, Text, useWindowDimensions } from "react-native";
+import { useWindowDimensions } from "react-native";
 import React from "react";
 import Svg, { G, Defs, RadialGradient, Stop, Rect } from "react-native-svg";
-import Animated, {
-  useDerivedValue,
-  SharedValue,
-} from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 
 const AnimatedG = Animated.createAnimatedComponent(G);
 
 export default function Glow() {
-  // Derived values instead of useAnimatedProps
   const { width: windowWidth } = useWindowDimensions();
   const width = windowWidth * 1.4;
   const aspectRatio = 0.9;
@@ -27,7 +23,7 @@ export default function Glow() {
         bottom: "-4%",
       }}
     >
-      <AnimatedG opacity="0.25">
+      <AnimatedG opacity="0.3">
         <Rect
           width="774"
           height="867"

@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { PixelRatio, StyleSheet } from "react-native";
 
 export const generalStyles = StyleSheet.create({
   container: {
@@ -7,15 +7,14 @@ export const generalStyles = StyleSheet.create({
     alignItems: "center",
   },
   text: {
-    fontSize: 32,
-    lineHeight: 42,
+    fontSize: 41,
+    lineHeight: 50,
     textAlign: "center",
   },
   sub_text: {
-    fontSize: 15,
+    fontSize: 16.5,
     lineHeight: 24,
     opacity: 0.8,
-    paddingHorizontal: 12,
     textAlign: "center",
   },
   family_text: {
